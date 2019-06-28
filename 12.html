@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+
+		<title>Tiled WMS</title>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="map" class="map"></div>
+
+		<script>
+			// http://localhost:2131/geoserver/topp/wms?service=WMS&version=1.1.0&request=GetMap&layers=topp:tasmania_state_boundaries&styles=&bbox=143.83482400000003,-43.648056,148.47914100000003,-39.573891&width=768&height=673&srs=EPSG:4326&format=application/openlayers
+			var layers = [
+				new ol.layer.Tile({
+					source: new ol.source.XYZ({
+						url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+					})
+				}),
+				new ol.layer.Tile({
+					source: new ol.source.TileWMS({
+						url: 'http://localhost:2131/geoserver/topp/wms',
+						params: {
+							'LAYERS': 'topp:tasmania_state_boundaries',
+							'singleTile': true
+						}
+					})
+				})
+			];
+
+			var map = new ol.Map({
+				layers: layers,
+				target: 'map',
+				view: new ol.View({
+					center: [118, 24.5],
+					zoom: 8,
+					projection: "EPSG:4326"
+				})
+			});
+		</script>
+
+	</body>
+
+</html>

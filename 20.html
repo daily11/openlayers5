@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Draw Features</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+		<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+
+		<style>
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+
+			.tooltip {
+				position: relative;
+				background: rgba(0, 0, 0, 0.5);
+				border-radius: 4px;
+				color: white;
+				padding: 4px 8px;
+				opacity: 0.7;
+				white-space: nowrap;
+			}
+
+			.tooltip-measure {
+				opacity: 1;
+				font-weight: bold;
+			}
+
+			.tooltip-static {
+				background-color: #ffcc33;
+				color: black;
+				border: 1px solid white;
+			}
+
+			.tooltip-measure:before,
+			.tooltip-static:before {
+				border-top: 6px solid rgba(0, 0, 0, 0.5);
+				border-right: 6px solid transparent;
+				border-left: 6px solid transparent;
+				content: "";
+				position: absolute;
+				bottom: -6px;
+				margin-left: -7px;
+				left: 50%;
+			}
+
+			.tooltip-static:before {
+				border-top-color: #ffcc33;
+			}
+
+			.form-inline {
+				position: absolute;
+				bottom: 32px;
+				left: 16px;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">20.html</h1>
+		</header>
+		<div id="map" class="map"></div>
+		<form class="form-inline">
+			<label>Geometry type &nbsp;</label>
+			<select id="type">
+				<option value="Point">点</option>
+				<option value="LineString">线</option>
+				<option value="Polygon">面</option>
+				<option value="Circle">圆</option>
+				<option value="None">None</option>
+			</select>
+		</form>
+		<script>
+			var raster = new ol.layer.Tile({
+				source: new ol.source.OSM()
+			});
+
+			var source = new ol.source.Vector({
+				wrapX: false
+			});
+
+			var vector = new ol.layer.Vector({
+				source: source
+			});
+
+			var map = new ol.Map({
+				layers: [raster, vector],
+				target: 'map',
+				view: new ol.View({
+					center: [-11000000, 4600000],
+					zoom: 4
+				}),
+				controls: ol.control.defaults({
+					zoom: false,
+				}).extend([
+					// new ol.control.LayerSwitcher({ trash: false, extent: true }),
+					// new ol.control.ScaleLine(),
+					// new ol.control.Zoom({ target: undefined}),
+					//new ol.control.Rotate({
+					//    autoHide: true,
+					//    label: “N”
+					//}),
+				]),
+			});
+
+			var typeSelect = document.getElementById('type');
+
+			var draw; // global so we can remove it later
+			function addInteraction() {
+				var value = typeSelect.value;
+				if (value !== 'None') {
+					draw = new ol.interaction.Draw({
+						source: source,
+						type: typeSelect.value
+					});
+					map.addInteraction(draw);
+				}else{
+					clearLayer();
+				}
+			}
+
+
+			/**
+			 * Handle change event.
+			 */
+			typeSelect.onchange = function() {
+				clearLayer();
+				addInteraction();
+			};
+
+			function clearLayer() {
+				//停止画笔
+				map.removeInteraction(draw);
+				//清除图层
+				map.removeLayer(vector);
+				//清除所有的覆盖物
+				var arr = [].concat(map.getOverlays().getArray());
+				for (var i = 0; i < arr.length; i++) {
+					map.removeOverlay(arr[i]);
+				}
+				//添加图层
+				source = new ol.source.Vector();
+				vector = new ol.layer.Vector({
+					source: source,
+					style: new ol.style.Style({
+						fill: new ol.style.Fill({
+							color: 'rgba(255, 255, 255, 0.2)'
+						}),
+						stroke: new ol.style.Stroke({
+							color: '#ffcc33',
+							width: 2
+						}),
+						image: new ol.style.Circle({
+							radius: 7,
+							fill: new ol.style.Fill({
+								color: '#ffcc33'
+							})
+						})
+					})
+				});
+				map.addLayer(vector);
+			}
+
+
+			addInteraction();
+		</script>
+	</body>
+</html>

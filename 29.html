@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>WMTS</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">29.html</h1>
+		</header>
+		<div id="map" class="map"></div>
+		<script>
+			var projection = ol.proj.get('EPSG:3857');
+			var projectionExtent = projection.getExtent();
+			var size = ol.extent.getWidth(projectionExtent) / 256;
+			var resolutions = new Array(14);
+			var matrixIds = new Array(14);
+			for (var z = 0; z < 14; ++z) {
+				// generate resolutions and matrixIds arrays for this WMTS
+				resolutions[z] = size / Math.pow(2, z);
+				matrixIds[z] = z;
+			}
+
+			var map = new ol.Map({
+				layers: [
+					new ol.layer.Tile({
+						source: new ol.source.OSM(),
+						opacity: 0.7
+					}),
+					new ol.layer.Tile({
+						opacity: 0.7,
+						source: new ol.source.WMTS({
+							url: 'https://services.arcgisonline.com/arcgis/rest/' +
+								'services/Demographics/USA_Population_Density/MapServer/WMTS/',
+							layer: '0',
+							matrixSet: 'EPSG:3857',
+							format: 'image/png',
+							projection: projection,
+							tileGrid: new ol.tilegrid.WMTS({
+								origin: ol.extent.getTopLeft(projectionExtent),
+								resolutions: resolutions,
+								matrixIds: matrixIds
+							}),
+							style: 'default',
+							wrapX: true
+						})
+					})
+				],
+
+				target: 'map',
+				view: new ol.View({
+					center: [-11158582, 4813697],
+					zoom: 4
+				})
+			});
+		</script>
+	</body>
+</html>

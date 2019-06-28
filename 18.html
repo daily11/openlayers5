@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<!-- 弹出框样式 -->
+		<link rel="stylesheet" type="text/css" href="css/popup.css"/>
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">18.html</h1>
+		</header>
+		<!-- 地图 -->
+		<div id="map" class="map">
+		</div>
+		<div id="popup" class="ol-popup">
+			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+			<div id="popup-content"></div>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		var map, beijing, hengjiang, ditu, shiliangtu, yingxiangtu, layers = [];
+		mui.init();
+		mui.plusReady(function() {
+			initMap();
+
+			$(document).ready(function() {
+				//数据源
+				var vectorSource = new ol.source.Vector();
+
+				//图层
+				var vectorLayer = new ol.layer.Vector({
+					visible: true,
+					key: 1,
+					name: "要素图层",
+					source: vectorSource
+				});
+
+				//地图添加图层
+				map.addLayer(vectorLayer);
+
+				//覆盖物【点】
+				var feature = new ol.Feature({
+					geometry: new ol.geom.Point(hengjiang),
+					// geometry:new LineString,
+					name: '中恒泾',
+					population: 2115
+				});
+
+				//覆盖物样式
+				var style = new ol.style.Style({
+					image: new ol.style.Icon(({
+						anchor: [0.5, 60],
+						anchorOrigin: 'top-right',
+						anchorXUnits: 'fraction',
+						anchorYUnits: 'pixels',
+						offsetOrigin: 'top-right',
+						//offset:[0,10],
+						scale: 0.5,
+						opacity: 0.75,
+						src: './img/ditu.png'
+					})),
+					text: new ol.style.Text({
+						textAlign: 'center',
+						textBaseline: 'middle',
+						font: 'normal 14px 微软雅黑',
+						text: feature.get('name'),
+						//文本填充样式
+						fill: new ol.style.Fill({
+							color: 'yellow'
+						}),
+						//文本描边样式
+						stroke: new ol.style.Stroke({
+							color: 'red',
+							width: 2
+						})
+					})
+				});
+
+				//要素添加样式
+				feature.setStyle(style);
+
+				//数据源添加要素
+				vectorSource.addFeature(feature);
+
+
+				//弹出框控件
+				var container = document.getElementById('popup');
+				//显示内容控件
+				var content = document.getElementById('popup-content');
+				//关闭按钮
+				var closer = document.getElementById('popup-closer');
+				//覆盖物
+				var overlay = new ol.Overlay({
+					element: container,
+					autoPan: true,
+					autoPanAnimation: {
+						duration: 250
+					}
+				});
+				//添加覆盖物
+				map.addOverlay(overlay)
+				//关闭按钮点击监听
+				closer.onclick = function() {
+					overlay.setPosition(undefined); //关键代码
+					closer.blur();
+					return false;
+				};
+
+				//绑定地图的多边形点击事件
+				map.on('singleclick', function(e) {
+					var coordinate = e.coordinate;
+					var extent = [coordinate[0] - 1500, coordinate[1] - 1500, coordinate[0] + 1500, coordinate[1] + 1500];
+					vectorSource.forEachFeatureIntersectingExtent(extent, function(feature) {
+						if (feature.get("name") == "中恒泾") {
+							content.innerHTML = '<p>要素名：</p><code>' + feature.get("name") +
+								'</code>';
+							overlay.setPosition(coordinate);
+						}
+					});
+				});
+
+			})
+		})
+
+		function initMap() {
+			beijing = new ol.proj.fromLonLat([116.397474, 39.908696]);
+			hengjiang = new ol.proj.fromLonLat([121.063624, 31.11647]);
+			ditu = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+			shiliangtu = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=cta_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+			map = new ol.Map({
+				//这个target对应一个div的id
+				target: 'map',
+				layers: [
+					//天地图底图
+					ditu,
+					//天地图数据源
+					shiliangtu
+				],
+				controls: ol.control.defaults({
+					zoom: false,
+				}).extend([
+					// new ol.control.LayerSwitcher({ trash: false, extent: true }),
+					// new ol.control.ScaleLine(),
+					// new ol.control.Zoom({ target: undefined}),
+					//new ol.control.Rotate({
+					//    autoHide: true,
+					//    label: “N”
+					//}),
+				]),
+				view: new ol.View({
+					//地图中心点
+					center: hengjiang,
+					//缩放级别
+					zoom: 11,
+					// //地图缩放最小级别
+					// minZoom: 10,
+					// //地图缩放最大级别
+					// maxZoom: 16
+				})
+			});
+		}
+	</script>
+
+</html>

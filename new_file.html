@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+
+	<script>
+		var test = async function() {
+			await new Promise(function(resolve, reject) {
+					setTimeout(function() {
+						var flag = true;
+						if (flag) {
+							resolve("resolve")
+						} else {
+							reject("reject")
+						}
+					}, 1000);
+				})
+				.then(function(data) {
+					console.log(data)
+				})
+				.catch(function(data) {
+					console.log(data)
+				});
+			console.log("test方法结束")
+		};
+		test();
+	</script>
+
+</html>

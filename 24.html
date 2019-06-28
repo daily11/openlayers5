@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Clustered Features</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+		</style>
+
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">24.html</h1>
+		</header>
+		<div id="map" class="map"></div>
+		<form>
+			<label>cluster distance</label>
+			<input id="distance" type="range" min="0" max="100" step="1" value="40" />
+		</form>
+		<script>
+
+
+			var distance = document.getElementById('distance');
+
+			var count = 20000;
+			var features = new Array(count);
+			var e = 4500000;
+			for (var i = 0; i < count; ++i) {
+				var coordinates = [2 * e * Math.random() - e, 2 * e * Math.random() - e];
+				features[i] = new ol.Feature(new ol.geom.Point(coordinates));
+			}
+
+			var source = new ol.source.Vector({
+				features: features
+			});
+
+			var clusterSource = new ol.source.Cluster({
+				distance: parseInt(distance.value, 10),
+				source: source
+			});
+
+			var styleCache = {};
+			var clusters = new ol.layer.Vector({
+				source: clusterSource,
+				style: function(feature) {
+					var size = feature.get('features').length;
+					var style = styleCache[size];
+					if (!style) {
+						style = new ol.style.Style({
+							image: new ol.style.Circle({
+								radius: 10,
+								stroke: new ol.style.Stroke({
+									color: '#fff'
+								}),
+								fill: new ol.style.Fill({
+									color: '#3399CC'
+								})
+							}),
+							text: new ol.style.Text({
+								text: size.toString(),
+								fill: new ol.style.Fill({
+									color: '#fff'
+								})
+							})
+						});
+						styleCache[size] = style;
+					}
+					return style;
+				}
+			});
+
+			var raster = new ol.layer.Tile({
+				source: new ol.source.OSM()
+			});
+
+			var map = new ol.Map({
+				layers: [raster, clusters],
+				target: 'map',
+				view: new ol.View({
+					center: [0, 0],
+					zoom: 2
+				})
+			});
+
+			distance.addEventListener('input', function() {
+				clusterSource.setDistance(parseInt(distance.value, 10));
+			});
+		</script>
+	</body>
+</html>

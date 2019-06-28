@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+
+			.show {
+				position: absolute;
+				top: 100px;
+				left: 120px;
+			}
+
+			.hide {
+				position: absolute;
+				top: 100px;
+				left: 200px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">15.html</h1>
+		</header>
+		<!-- 地图 -->
+		<div id="map" class="map"></div>
+	</body>
+
+	<script type="text/javascript">
+		var map, beijing, hengjiang, ditu, shiliangtu, yingxiangtu, layers = [];
+
+		//开始坐标
+		var startPoint = ol.proj.fromLonLat([120.909766, 31.108004]);
+		//结束坐标1
+		var endPoint1 = ol.proj.fromLonLat([121.010017, 31.10477]);
+		var endPoint2 = ol.proj.fromLonLat([120.99388, 31.059195]);
+		var endPoint3 = ol.proj.fromLonLat([121.054992, 31.108886]);
+
+		mui.init();
+		mui.plusReady(function() {
+			initMap();
+
+			$(document).ready(function() {
+				//数据源
+				var vectorSource = new ol.source.Vector();
+
+				//图层
+				var vectorLayer = new ol.layer.Vector({
+					visible: true,
+					key: 1,
+					name: "要素图层",
+					source: vectorSource
+				});
+
+				//地图添加图层
+				map.addLayer(vectorLayer);
+
+				//覆盖物【点】
+				var feature = new ol.Feature({
+					'geometry': new ol.geom.Polygon([
+						[endPoint1, endPoint2],
+						[endPoint2, endPoint3],
+						[endPoint1, endPoint3],
+					]),
+					name: "三角形"
+				});
+
+				//覆盖物样式
+				var style = new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: 'red',
+						width: 4
+					})
+				})
+
+				//要素添加样式
+				feature.setStyle(style);
+
+				//数据源添加要素
+				vectorSource.addFeature(feature);
+			})
+		})
+
+		function initMap() {
+			beijing = new ol.proj.fromLonLat([116.397474, 39.908696]);
+			hengjiang = new ol.proj.fromLonLat([121.063624, 31.11647]);
+			ditu = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+			shiliangtu = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=cta_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+			map = new ol.Map({
+				//这个target对应一个div的id
+				target: 'map',
+				layers: [
+					//天地图底图
+					ditu,
+					//天地图数据源
+					shiliangtu
+				],
+				controls: ol.control.defaults({
+					zoom: false,
+				}).extend([
+					// new ol.control.LayerSwitcher({ trash: false, extent: true }),
+					// new ol.control.ScaleLine(),
+					// new ol.control.Zoom({ target: undefined}),
+					//new ol.control.Rotate({
+					//    autoHide: true,
+					//    label: “N”
+					//}),
+				]),
+				view: new ol.View({
+					//地图中心点
+					center: hengjiang,
+					//缩放级别
+					zoom: 11,
+					// //地图缩放最小级别
+					// minZoom: 10,
+					// //地图缩放最大级别
+					// maxZoom: 16
+				})
+			});
+		}
+	</script>
+
+</html>

@@ -1,0 +1,216 @@
+<!-- 卷帘
+	https://openlayers.org/en/latest/examples/layer-swipe.html?q=
+ -->
+ 
+ <!-- 动态轨迹
+	https://openlayers.org/en/latest/examples/dynamic-data.html?q=dyna
+  -->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			.align {
+				float: right;
+				margin-right: 19px;
+			}
+		</style>
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+		</script>
+	</head>
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">首页</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">基本地图加载</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="1.html">
+							基本地图加载---ol.source.XYZ<i class="align">1.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="27.html">
+							基本地图加载---wfs[要素级别]<i class="align">27.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="29.html">
+							基本地图加载---wmts[瓦片地图]<i class="align">29.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="12.html">
+							基本地图加载---wms[图层级别]<i class="align">12.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="28.html">
+							wfs[要素级别]---要素加载监听<i class="align">28.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">基本控件加载</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="2.html">
+							添加缩放控件<i class="align">2.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="3.html">
+							添加比例尺控件<i class="align">3.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="4.html">
+							添加鹰眼控件<i class="align">4.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">地图基本操作</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="5.html">
+							地图放大缩小<i class="align">5.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="6.html">
+							移动地图<i class="align">6.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="7.html">
+							设置地图范围<i class="align">7.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="8.html">
+							设置地图显示级别<i class="align">8.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">地图信息获取</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="9.html">
+							获取地图中心点<i class="align">9.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="10.html">
+							获取地图缩放级别<i class="align">10.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="11.html">
+							获取可视范围坐标<i class="align">11.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="23.html">
+							获取点击处坐标<i class="align">23.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">添加覆盖物</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="13.html">
+							添加图文标注<i class="align">13.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="14.html">
+							添加线<i class="align">14.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="15.html">
+							添加多边形<i class="align">15.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="16.html">
+							添加圆<i class="align">16.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="17.html">
+							添加图片、GIF覆盖物类<i class="align">17.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="24.html">
+							添加海量聚合物<i class="align">24.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">轨迹</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="25.html">
+							单点轨迹<i class="align">25.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="26.html">
+							多点轨迹<i class="align">26.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">信息窗口+地图单击事件监听</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="18.html">
+							信息窗口+地图单击事件监听<i class="align">18.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">地图测距</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="19.html">
+							测量距离+测量面积<i class="align">19.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">绘制图形</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="20.html">
+							绘制基本图形<i class="align">20.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="21.html">
+							绘制可修改的图形<i class="align">21.html</i>
+						</a>
+					</div>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="22.html">
+							绘制更多种类的图形<i class="align">22.html</i>
+						</a>
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">高级操作</a>
+					<div class="mui-collapse-content">
+						<a class="mui-navigate-right" href="30.html">
+							卷帘<i class="align">30.html</i>
+						</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</body>
+</html>

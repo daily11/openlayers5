@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+
+			.show {
+				position: absolute;
+				top: 100px;
+				left: 60px;
+			}
+
+			.hide {
+				position: absolute;
+				top: 100px;
+				left: 200px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">6.html</h1>
+		</header>
+		<!-- 地图 -->
+		<div id="map" class="map"></div>
+		<div class="show">
+			<button type="button" class="mui-btn mui-btn-blue">平移到北京</button>
+		</div>
+		<div class="hide">
+			<button type="button" class="mui-btn mui-btn-blue">飞行到上海</button>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		var map, beijing, hengjiang, ditu, shiliangtu, yingxiangtu, layers = [];
+		mui.init();
+		mui.plusReady(function() {
+			initMap();
+
+			var view = map.getView();
+			var zoomLevel = view.getZoom();
+			$(document).ready(function() {
+				$(":button").each(function(key, value) {
+					if (value) {
+						$(this).click(function() {
+							if (value.innerHTML == '平移到北京') {
+								// view.setCenter(beijing);
+								view.animate({
+									center: beijing,
+									duration: 500
+								});
+							} else if (value.innerHTML == '飞行到上海') {
+								// view.setCenter(hengjiang)
+								flyTo(view,hengjiang, function() {});
+							}
+						})
+					}
+				})
+			})
+		})
+
+		/**
+		 * 飞行移动
+		 * @param {Object} view
+		 * @param {Object} location
+		 * @param {Object} done
+		 */
+		function flyTo(view,location, done) {
+			var duration = 2000;
+			var zoom = view.getZoom();
+			var parts = 2;
+			var called = false;
+
+			function callback(complete) {
+				--parts;
+				if (called) {
+					return;
+				}
+				if (parts === 0 || !complete) {
+					called = true;
+					done(complete);
+				}
+			}
+			view.animate({
+				center: location,
+				duration: duration
+			}, callback);
+			view.animate({
+				zoom: zoom - 1,
+				duration: duration / 2
+			}, {
+				zoom: zoom,
+				duration: duration / 2
+			}, callback);
+		}
+
+		function initMap() {
+			beijing = new ol.proj.fromLonLat([116.397474, 39.908696]);
+			hengjiang = new ol.proj.fromLonLat([121.063624, 31.11647]);
+			ditu = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+			shiliangtu = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=cta_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+			yingxiangtu = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+			map = new ol.Map({
+				//这个target对应一个div的id
+				target: 'map',
+				layers: [
+					//天地图底图
+					ditu,
+					//天地图数据源
+					shiliangtu
+				],
+				controls: ol.control.defaults({
+					zoom: false,
+				}).extend([
+					// new ol.control.LayerSwitcher({ trash: false, extent: true }),
+					// new ol.control.ScaleLine(),
+					// new ol.control.Zoom({ target: undefined}),
+					//new ol.control.Rotate({
+					//    autoHide: true,
+					//    label: “N”
+					//}),
+				]),
+				view: new ol.View({
+					//地图中心点
+					center: hengjiang,
+					//缩放级别
+					zoom: 11,
+					// //地图缩放最小级别
+					// minZoom: 10,
+					// //地图缩放最大级别
+					// maxZoom: 16
+				})
+			});
+		}
+	</script>
+
+</html>

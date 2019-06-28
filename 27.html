@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>WFS</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">27.html</h1>
+		</header>
+		<div id="map" class="map"></div>
+		<script>
+			var vectorSource = new ol.source.Vector({
+				format: new ol.format.GeoJSON(),
+				url: function(extent) {
+					return 'https://ahocevar.com/geoserver/wfs?service=WFS&' +
+						'version=1.1.0&request=GetFeature&typename=osm:water_areas&' +
+						'outputFormat=application/json&srsname=EPSG:3857&' +
+						'bbox=' + extent.join(',') + ',EPSG:3857';
+				},
+				strategy: ol.loadingstrategy.bbox
+			});
+
+
+			var vector = new ol.layer.Vector({
+				source: vectorSource,
+				style: new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: 'rgba(0, 0, 255, 1.0)',
+						width: 2
+					})
+				})
+			});
+
+			var raster = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+				})
+			});
+
+			var map = new ol.Map({
+				layers: [raster, vector],
+				target: document.getElementById('map'),
+				view: new ol.View({
+					center: [-8908887.277395891, 5381918.072437216],
+					maxZoom: 19,
+					zoom: 12
+				})
+			});
+		</script>
+	</body>
+</html>
