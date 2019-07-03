@@ -28,7 +28,12 @@
 		</header>
 		<div id="map" class="map"></div>
 		<script>
-			var projection = ol.proj.get('EPSG:3857');
+			
+			//中横泾坐标
+			var hengjiang = ol.proj.fromLonLat([121.063624, 31.11647]);
+			
+			//通过范围计算得到分辨率数组
+			var projection = ol.proj.get('EPSG:4326');
 			var projectionExtent = projection.getExtent();
 			var size = ol.extent.getWidth(projectionExtent) / 256;
 			var resolutions = new Array(14);
@@ -41,34 +46,69 @@
 
 			var map = new ol.Map({
 				layers: [
+					//天地图 底图
 					new ol.layer.Tile({
-						source: new ol.source.OSM(),
-						opacity: 0.7
-					}),
-					new ol.layer.Tile({
-						opacity: 0.7,
+						opacity: 0.7,						//图层透明度
 						source: new ol.source.WMTS({
-							url: 'https://services.arcgisonline.com/arcgis/rest/' +
-								'services/Demographics/USA_Population_Density/MapServer/WMTS/',
-							layer: '0',
-							matrixSet: 'EPSG:3857',
-							format: 'image/png',
-							projection: projection,
+							url: 'http://t0.tianditu.gov.cn/vec_c/wmts?tk=9c8e35238fc797b6da97c119acb93478',
+							layer: 'vec',
+							matrixSet: 'c',					//投影坐标系设置矩阵
+							format: 'tiles',				//瓦片形式
+							projection: projection,			//数据的投影坐标系
+							//瓦片网格对象
 							tileGrid: new ol.tilegrid.WMTS({
-								origin: ol.extent.getTopLeft(projectionExtent),
-								resolutions: resolutions,
-								matrixIds: matrixIds
+								origin: ol.extent.getTopLeft(projectionExtent),	//圆点(左上角)
+								resolutions: resolutions,	//分辨率数组
+								matrixIds: matrixIds		//矩阵标识列表,与地图级数保持一致
 							}),
 							style: 'default',
 							wrapX: true
 						})
-					})
+					}),
+					//天地图 矢量数据
+					new ol.layer.Tile({
+						opacity: 0.7,						//图层透明度
+						source: new ol.source.WMTS({
+							url: 'http://t0.tianditu.gov.cn/cva_c/wmts?tk=9c8e35238fc797b6da97c119acb93478',
+							layer: 'cva',
+							matrixSet: 'c',					//投影坐标系设置矩阵
+							format: 'tiles',				//瓦片形式
+							projection: projection,			//数据的投影坐标系
+							//瓦片网格对象
+							tileGrid: new ol.tilegrid.WMTS({
+								origin: ol.extent.getTopLeft(projectionExtent),	//圆点(左上角)
+								resolutions: resolutions,	//分辨率数组
+								matrixIds: matrixIds		//矩阵标识列表,与地图级数保持一致
+							}),
+							style: 'default',
+							wrapX: true
+						})
+					}),
+					// //天地图 遥感影像
+					// new ol.layer.Tile({
+					// 	opacity: 0.7,						//图层透明度
+					// 	source: new ol.source.WMTS({
+					// 		url: 'http://t0.tianditu.gov.cn/img_c/wmts?tk=9c8e35238fc797b6da97c119acb93478',
+					// 		layer: 'img',
+					// 		matrixSet: 'c',					//投影坐标系设置矩阵
+					// 		format: 'tiles',				//瓦片形式
+					// 		projection: projection,			//数据的投影坐标系
+					// 		//瓦片网格对象
+					// 		tileGrid: new ol.tilegrid.WMTS({
+					// 			origin: ol.extent.getTopLeft(projectionExtent),	//圆点(左上角)
+					// 			resolutions: resolutions,	//分辨率数组
+					// 			matrixIds: matrixIds		//矩阵标识列表,与地图级数保持一致
+					// 		}),
+					// 		style: 'default',
+					// 		wrapX: true
+					// 	})
+					// })
 				],
 
 				target: 'map',
 				view: new ol.View({
-					center: [-11158582, 4813697],
-					zoom: 4
+					center: hengjiang,
+					zoom: 11
 				})
 			});
 		</script>

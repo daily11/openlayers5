@@ -40,11 +40,27 @@
 					})
 				}),
 				new ol.layer.Tile({
+					source: new ol.source.XYZ({
+						url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=cta_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+					})
+				}),
+				// //使用Image图层加载
+				// new ol.layer.Image({
+				// 	source: new ol.source.ImageWMS({
+				// 		url: 'http://221.181.88.134:6706/geoserver/sunt/wms?service=WMS',
+				// 		params: {
+				// 			'layers': 'sunt:baoshanregion',
+				// 			'singleTile': false
+				// 		}
+				// 	})
+				// })
+				//使用Tile图层加载
+				new ol.layer.Tile({
 					source: new ol.source.TileWMS({
-						url: 'http://localhost:2131/geoserver/topp/wms',
+						url: 'http://221.181.88.134:6706/geoserver/sunt/wms?service=WMS',
 						params: {
-							'LAYERS': 'topp:tasmania_state_boundaries',
-							'singleTile': true
+							'layers': 'sunt:baoshanregion',
+							'singleTile': false
 						}
 					})
 				})
@@ -54,7 +70,7 @@
 				layers: layers,
 				target: 'map',
 				view: new ol.View({
-					center: [118, 24.5],
+					center: [121.3575, 31.3956],
 					zoom: 8,
 					projection: "EPSG:4326"
 				})
