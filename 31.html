@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui相关 -->
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<link href="css/mui.css" rel="stylesheet" type="text/css" />
+		<!-- 地图相关 -->
+		<script src=" lib/js/ol.js" type="text/javascript" charset="utf-8">
+		</script>
+		<link href="lib/css/ol.css" rel="stylesheet" type="text/css" />
+		<!-- jQuery相关 -->
+		<script src="lib/js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体相关 -->
+		<link rel="stylesheet" type="text/css" href="lib/css/iconfont.css" />
+		<style type="text/css">
+			.map {
+				height: calc(100vh);
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">31.html</h1>
+		</header>
+		<div class="mui-content">
+			<!-- 地图 -->
+			<div id="map" class="map"></div>
+		</div>
+	</body>
+  
+  <script>
+    var style = new ol.style.Style({
+	  //填充
+      fill: new ol.style.Fill({
+        color: 'rgba(255, 255, 255, 0.6)'
+      }),
+	  //边框
+      stroke: new ol.style.Stroke({
+        color: '#319FD3',
+        width: 1
+      }),
+	  //文本样式
+      text: new ol.style.Text({
+        font: '12px Calibri,sans-serif',
+        fill: new ol.style.Fill({
+          color: '#000'
+        }),
+        stroke: new ol.style.Stroke({
+          color: '#fff',
+          width: 3
+        }),
+      })
+    });
+	
+    var vectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: 'data/geojson/countries.geojson',
+        format: new ol.format.GeoJSON()
+      }),
+      style: function(feature) {
+        style.getText().setText(feature.get('name'));
+        return style;
+      } 
+    });
+  
+    var map = new ol.Map({
+      layers: [vectorLayer],
+      target: 'map',
+      view: new ol.View({
+        center: [0, 0],
+        zoom: 1
+      })
+    });
+	
+	var highlightStyle = new ol.style.Style({
+	  stroke: new ol.style.Stroke({
+	    color: '#f00',
+	    width: 1
+	  }),
+	  fill: new ol.style.Fill({
+	    color: 'rgba(255,0,0,0.1)'
+	  }),
+	  text: new ol.style.Text({
+	    font: '12px Calibri,sans-serif',
+	    fill: new ol.style.Fill({
+	      color: '#000'
+	    }),
+	    stroke: new ol.style.Stroke({
+	      color: '#f00',
+	      width: 3
+	    })
+	  })
+	});
+  
+    var featureOverlay = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      map: map,
+      style: function(feature) {
+        highlightStyle.getText().setText(feature.get('name'));
+        return highlightStyle;
+      }
+    });
+	
+    var highlight;
+    var displayFeatureInfo = function(pixel) {
+      var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+        return feature;
+      });
+      if (feature !== highlight) {
+        if (highlight) {
+          featureOverlay.getSource().removeFeature(highlight);
+        }
+        if (feature) {
+          featureOverlay.getSource().addFeature(feature);
+        }
+        highlight = feature;
+      }
+    };
+  
+    map.on('pointermove', function(evt) {
+      if (evt.dragging) {
+        return;
+      }
+      var pixel = map.getEventPixel(evt.originalEvent);
+      displayFeatureInfo(pixel);
+    });
+  
+    map.on('click', function(evt) {
+      displayFeatureInfo(evt.pixel);
+    });
+  
+  </script>
+</html>
