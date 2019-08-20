@@ -39,43 +39,62 @@
 		var map, hengjiang, ditu, shiliangtu, yingxiangtu, layers = [];
 		mui.init();
 		mui.plusReady(function() {
-			hengjiang = new ol.proj.fromLonLat([121.063624, 31.11647]);
-			ditu = new ol.layer.Tile({
-				source: new ol.source.XYZ({
-					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
-				})
-			});
-			shiliangtu = new ol.layer.Tile({
-				source: new ol.source.XYZ({
-					url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=cta_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
-				})
-			});
-			yingxiangtu = new ol.layer.Tile({
-				source: new ol.source.XYZ({
-					url: 'http://t{0-7}.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
-				})
-			});
-			map = new ol.Map({
-				//这个target对应一个div的id
-				target: 'map',
-				layers: [
-					//天地图底图
-					ditu,
-					//天地图数据源
-					shiliangtu
-				],
-				view: new ol.View({
-					//地图中心点
-					center: hengjiang,
-					//缩放级别
-					zoom: 11,
-					// //地图缩放最小级别
-					// minZoom: 10,
-					// //地图缩放最大级别
-					// maxZoom: 16
-				})
-			});
+
 		})
+		hengjiang = new ol.proj.fromLonLat([121.063624, 31.11647]);
+		ditu = new ol.layer.Tile({
+			source: new ol.source.XYZ({
+				url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+			})
+		});
+		shiliangtu = new ol.layer.Tile({
+			source: new ol.source.XYZ({
+				url: 'http://t{0-7}.tianditu.gov.cn/DataServer?T=cta_w&x={x}&y={y}&l={z}&tk=53ed32eb4b23c6607c2f1d8616ecf217',
+			})
+		});
+		 //青浦水利瓦片图层
+		var qp = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					tileUrlFunction: function(xyz, a, b) {
+						let x = 'C' + convert16(8, xyz[1]);
+						let y = 'R' + convert16(8, xyz[2] + 1);
+						let z = 'L' + (xyz[0] < 10 ? '0' + xyz[0] : xyz[0]);
+						return 'http://221.181.88.134:8079/map/river/201801/' + z + '/' + y + '/' + x + '.' + 'png';
+					}
+				})
+			})
+		map = new ol.Map({
+			//这个target对应一个div的id
+			target: 'map',
+			layers: [
+				//天地图底图
+				ditu,
+				//天地图数据源
+				shiliangtu,
+				qp,
+			],
+			view: new ol.View({
+				//地图中心点
+				center: hengjiang,
+				//缩放级别
+				zoom: 10,
+				//地图缩放最小级别
+				minZoom: 10,
+				//地图缩放最大级别
+				maxZoom: 16
+			})
+		});
+		
+		function convert16(length, value) {
+			var v = Math.abs(value);
+			var s = v.toString(16);
+			var len = length - s.length;
+			var tmp = "";
+			for (var i = 0; i < len; i++) {
+				tmp += "0";
+			}
+			return tmp + s;
+		}
 	</script>
 
 </html>

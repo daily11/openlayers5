@@ -56,8 +56,10 @@
 
 			//地图范围
 			var mapExtent = map.getView().calculateExtent(map.getSize());
+			console.log(mapExtent,"mapExtent");
 			//左上角坐标
 			var topLeftPoint = ol.extent.getTopLeft(mapExtent);
+			console.log(topLeftPoint,"topLeftPoint");
 			topLeftPoint = ol.proj.transform([topLeftPoint[0], topLeftPoint[1]], 'EPSG:3857', 'EPSG:4326');
 			console.log("左上角坐标："+topLeftPoint);
 			//右上角坐标
